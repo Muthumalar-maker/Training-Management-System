@@ -1,12 +1,12 @@
 ﻿using System;
 using TrainingManagementSystem.Models;
 using TrainingManagementSystem.Services;
+using TrainingManagementSystem.Sessions;
 
 namespace TrainingManagementSystem
 {
     internal class Program
     {
-        // Array containing five courses
         static Course[] courses =
         {
             new Course("C101", "C# Programming", 5000m, 30, 30),
@@ -18,15 +18,27 @@ namespace TrainingManagementSystem
 
         static void Main(string[] args)
         {
+            //RunMenu();
             int choice = 0;
 
-            // Create service objects inside Main
+            GenericHelper helper = new GenericHelper();
+
+            helper.DisplayItems(courses);
+
             LearnerService learnerService = new LearnerService();
 
             EnrollmentService enrollmentService =
                 new EnrollmentService(courses, learnerService);
 
-            // Main menu
+            IPaymentProcessor onlineProcessor =
+    new OnlinePaymentProcessor();
+
+            IPaymentProcessor classroomProcessor =
+                new ClassroomPaymentProcessor();
+
+            bool onlineResult = onlineProcessor.ProcessPayment(2000m);
+            bool classroomResult = classroomProcessor.ProcessPayment(3000m);
+
             while (choice != 12)
             {
                 Console.WriteLine("\n===== TRAINING MANAGEMENT SYSTEM =====");
@@ -114,6 +126,108 @@ namespace TrainingManagementSystem
             }
         }
 
+        static void DisplayMenu()
+        {
+            Console.WriteLine("\n===== TRAINING MANAGEMENT SYSTEM =====");
+            Console.WriteLine("1. List all courses");
+            Console.WriteLine("2. Search courses");
+            Console.WriteLine("3. Sort courses by fee");
+            Console.WriteLine("4. Register a learner");
+            Console.WriteLine("5. List learners");
+            Console.WriteLine("6. Search for a learner");
+            Console.WriteLine("7. Enroll in a course");
+            Console.WriteLine("8. View enrollment records");
+            Console.WriteLine("9. Cancel an enrollment");
+            Console.WriteLine("10. Display a fee breakdown");
+            Console.WriteLine("11. Process a simulated payment");
+            Console.WriteLine("12. View payment history");
+            Console.WriteLine("13. Display reports");
+            Console.WriteLine("14. Exit");
+            Console.Write("Enter your choice: ");
+        }
+
+        static void RunMenu()
+        {
+            bool running = true;
+
+            while (running)
+            {
+                DisplayMenu();
+
+                string? input = Console.ReadLine();
+
+                if (!int.TryParse(input, out int choice))
+                {
+                    Console.WriteLine("Please enter a valid number.");
+                    continue;
+                }
+
+                switch (choice)
+                {
+                    case 1:
+                        Console.WriteLine("List all courses selected.");
+                        break;
+
+                    case 2:
+                        Console.WriteLine("Search courses selected.");
+                        break;
+
+                    case 3:
+                        Console.WriteLine("Sort courses by fee selected.");
+                        break;
+
+                    case 4:
+                        Console.WriteLine("Register a learner selected.");
+                        break;
+
+                    case 5:
+                        Console.WriteLine("List learners selected.");
+                        break;
+
+                    case 6:
+                        Console.WriteLine("Search for a learner selected.");
+                        break;
+
+                    case 7:
+                        Console.WriteLine("Enroll in a course selected.");
+                        break;
+
+                    case 8:
+                        Console.WriteLine("View enrollment records selected.");
+                        break;
+
+                    case 9:
+                        Console.WriteLine("Cancel an enrollment selected.");
+                        break;
+
+                    case 10:
+                        Console.WriteLine("Fee breakdown selected.");
+                        break;
+
+                    case 11:
+                        Console.WriteLine("Simulated payment selected.");
+                        break;
+
+                    case 12:
+                        Console.WriteLine("Payment history selected.");
+                        break;
+
+                    case 13:
+                        Console.WriteLine("Reports selected.");
+                        break;
+
+                    case 14:
+                        running = false;
+                        Console.WriteLine("Thank you!");
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid choice. Enter 1 to 14.");
+                        break;
+                }
+            }
+        }
+
         // Display course details
         static void DisplayCourses(Course[] list)
         {
@@ -137,10 +251,10 @@ namespace TrainingManagementSystem
                     list[i].DurationDays,
                     list[i].TotalSeats,
                     list[i].AvailableSeats);
+
             }
         }
 
-        // Search course by code
         static void SearchByCode(string code)
         {
             bool found = false;
@@ -186,7 +300,6 @@ namespace TrainingManagementSystem
             }
         }
 
-        // Sort course fees using Bubble Sort
         static void SortCourses(bool ascending)
         {
             Course[] sorted = (Course[])courses.Clone();
@@ -216,6 +329,46 @@ namespace TrainingManagementSystem
             }
 
             DisplayCourses(sorted);
+        }
+
+        static void TestCourseSummary()
+        {
+            CourseSummary summary1 = new CourseSummary(
+                "C101", "C# Programming", 5000m, 25);
+
+            CourseSummary summary2 = new CourseSummary(
+                "C101", "C# Programming", 5000m, 25);
+
+            Console.WriteLine(summary1 == summary2);
+
+            CourseSummary modifiedSummary = summary1 with
+            {
+                Fee = 4500m
+            };
+
+            Console.WriteLine("Original Fee: " + summary1.Fee);
+            Console.WriteLine("Modified Fee: " + modifiedSummary.Fee);
+        }
+
+        static void TestSessions()
+        {
+            CourseSession online = new OnlineSession(
+                "C101",
+                DateTime.Today.AddDays(20),
+                new SessionDuration(30)
+            );
+
+            CourseSession classroom = new ClassroomSession(
+                "C102",
+                DateTime.Today.AddDays(25),
+                new SessionDuration(45)
+            );
+
+            Console.WriteLine("Online Session Charge: Rs. " +
+                online.CalculateSessionCharge());
+
+            Console.WriteLine("Classroom Session Charge: Rs. " +
+                classroom.CalculateSessionCharge());
         }
     }
 }

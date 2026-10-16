@@ -1,10 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using TrainingManagementSystem.Models;
 
 namespace TrainingManagementSystem.Sessions
 {
-    internal class ClassroomSession
+    public class ClassroomSession : CourseSession
     {
+        public ClassroomSession(
+            string courseCode,
+            DateTime startDate,
+            SessionDuration duration)
+            : base(courseCode, startDate, duration)
+        {
+        }
+
+        public override decimal CalculateSessionCharge()
+        {
+            return 800m;
+        }
     }
 }

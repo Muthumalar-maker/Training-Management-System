@@ -1,10 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TrainingManagementSystem.Models
+﻿namespace TrainingManagementSystem.Models
 {
-    internal class SessionDuration
+    public struct SessionDuration
     {
+        public int Days { get; set; }
+
+        public SessionDuration(int days)
+        {
+            if (days <= 0)
+                throw new ArgumentException("Duration must be greater than zero.");
+
+            Days = days;
+        }
     }
 }

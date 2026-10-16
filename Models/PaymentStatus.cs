@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TrainingManagementSystem.Models
+﻿namespace TrainingManagementSystem.Models
 {
-    internal class PaymentStatus
+    public enum PaymentStatus
     {
+        Pending,
+        Successful,
+        Failed
     }
 }

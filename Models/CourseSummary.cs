@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TrainingManagementSystem.Models
+﻿namespace TrainingManagementSystem.Models
 {
-    internal class CourseSummary
-    {
-    }
+    public record CourseSummary(
+        string CourseCode,
+        string Title,
+        decimal Fee,
+        int AvailableSeats
+    );
 }

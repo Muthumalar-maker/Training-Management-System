@@ -1,5 +1,5 @@
 ﻿using System;
-
+using TrainingManagementSystem.Models;
 namespace TrainingManagementSystem.Models
 {
     public class Enrollment
@@ -12,6 +12,9 @@ namespace TrainingManagementSystem.Models
         public decimal DiscountAmount { get; set; }
         public decimal FinalFee { get; set; }
         public EnrollmentStatus Status { get; set; }
+
+        public PaymentStatus PaymentStatus { get; set; }
+        = PaymentStatus.Pending;
 
         public Enrollment(
             int enrollmentId,

@@ -10,6 +10,7 @@ namespace TrainingManagementSystem.Services
         private List<Enrollment> enrollments = new List<Enrollment>();
         private Course[] courses;
         private LearnerService learnerService;
+        private FeeCalculator feeCalculator = new FeeCalculator();
         private int nextEnrollmentId = 1;
 
         public EnrollmentService(Course[] courses, LearnerService learnerService)
@@ -85,9 +86,73 @@ namespace TrainingManagementSystem.Services
                 return;
             }
 
-            decimal baseFee = selectedCourse.Fee;
-            decimal discountAmount = 0m;
-            decimal finalFee = baseFee - discountAmount;
+
+            Console.Write("Days until course starts: ");
+
+            if (!int.TryParse(Console.ReadLine(), out int daysUntilStart)
+                || daysUntilStart < 0)
+            {
+                Console.WriteLine("Enter a valid non-negative number of days.");
+                return;
+            }
+
+            Console.Write("Number of eligible learners enrolling together: ");
+
+            if (!int.TryParse(Console.ReadLine(), out int eligibleLearnerCount)
+                || eligibleLearnerCount < 1)
+            {
+                Console.WriteLine("Enter a valid learner count.");
+                return;
+            }
+
+            Console.WriteLine("Select session type:");
+            Console.WriteLine("1. Online");
+            Console.WriteLine("2. Classroom");
+            Console.Write("Enter choice: ");
+
+            if (!int.TryParse(Console.ReadLine(), out int sessionChoice))
+            {
+                Console.WriteLine("Invalid session choice.");
+                return;
+            }
+
+            SessionType sessionType;
+
+            switch (sessionChoice)
+            {
+                case 1:
+                    sessionType = SessionType.Online;
+                    break;
+                case 2:
+                    sessionType = SessionType.Classroom;
+                    break;
+                default:
+                    Console.WriteLine("Select 1 or 2.");
+                    return;
+            }
+
+            FeeSummary feeSummary;
+
+            try
+            {
+                feeSummary = feeCalculator.CalculateSummary(
+                    selectedCourse.Fee,
+                    daysUntilStart,
+                    eligibleLearnerCount,
+                    sessionType);
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine("Fee calculation failed: " + ex.Message);
+                return;
+            }
+
+            decimal baseFee = feeSummary.BaseFee;
+            decimal discountAmount = feeSummary.TotalDiscount;
+            decimal finalFee = feeSummary.FinalFee;
+
+            feeCalculator.DisplayFeeBreakdown(in feeSummary);
+
 
             Enrollment enrollment = new Enrollment(
                 nextEnrollmentId,
